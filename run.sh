@@ -10,11 +10,16 @@ VIM=vim
 
 if [ -f "$RUNFILE" ]
 then
-    $BASH "$RUNFILE" ${@}
+    if [[ $# == 1 ]] && [[ "$1" == "-e" ]]
+    then
+        $VIM "$RUNFILE"
+    else
+        $BASH "$RUNFILE" ${@}
+    fi
     exit 0
 fi
 
-if [[ $# == 1 ]] && [[ "$1" == "init" ]]
+if [[ $# == 1 ]] && [[ "$1" == "-i" ]]
 then
 (
 cat <<RUN
@@ -27,7 +32,7 @@ set -ue
 # Add commands as test cases below.
 #
 
-USAGE="Usage: `basename \${0}` command"
+USAGE="Usage: `basename \${0}` -i|-e|test"
 
 if [[ \$# != 1 ]]
 then
