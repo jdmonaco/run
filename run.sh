@@ -1,48 +1,52 @@
 #!/usr/bin/env bash
 
 #
-# Script runner
+# Fast bash script maker/runner
 #
 
+VERSION="1.1"
 RUNFILE="./runfile"
 BASH=`which bash`
-VIM=vim
+VIM=`which vim`
 
-if [ -f "$RUNFILE" ]
-then
-    if [[ $# == 1 ]] && [[ "$1" == "-e" ]]
-    then
-        $VIM "$RUNFILE"
+if [ -f "$RUNFILE" ]; then
+    if [[ $# == 1 ]] && [[ "${1}" == "-e" ]]; then
+        exec $VIM "$RUNFILE"
     else
-        $BASH "$RUNFILE" ${@}
+        exec $BASH "$RUNFILE" "${@}"
     fi
-    exit 0
 fi
 
-if [[ $# == 1 ]] && [[ "$1" == "-i" ]]
-then
+if [[ $# == 1 ]] && [[ "${1}" == "-e" ]]; then
 (
 cat <<RUN
-#!/usr/bin/env sh
+#!/bin/bash
 set -ue
 
-#
 # Runfile script
-#
-# Add commands as test cases below.
-#
 
-USAGE="Usage: `basename \${0}` -i|-e|test"
+USAGE="Usage: `basename ${0}` -e|test [args]"
 
-if [[ \$# != 1 ]]
-then
+if (( \$# )); then
+    runcmd="\${1}"
+    shift
+else
     echo \$USAGE
     exit 1
 fi
 
-case "\$1" in
 
-test) echo "Testing runfile command." ;;
+# Add run commands as switch cases below. Do not make edits
+# outside of case blocks. Note: Optional args are available
+# as "\${@}". If used, consider the first line in the block
+# as a usage statement.
+
+
+case \$runcmd in
+
+test) # usage: test [args]
+    echo "Testing runfile command (\$# args)." 
+    ;;
 
 *)
     echo \$USAGE
@@ -51,9 +55,7 @@ test) echo "Testing runfile command." ;;
 
 esac
 RUN
-) > "$RUNFILE" &&
-    $VIM "$RUNFILE"
-exit 0
+) > "$RUNFILE" && exec $VIM "$RUNFILE"
 fi
 
 echo "No runfile found."
