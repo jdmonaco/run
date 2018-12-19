@@ -4,28 +4,25 @@
 # Fast bash script maker/runner
 #
 
-VERSION="1.1"
-RUNFILE="./runfile"
-BASH=`which bash`
-VIM=`which vim`
+VERSION="1.1.1"
+RUNFILE="runfile"
 
-if [ -f "$RUNFILE" ]; then
-    if [[ $# == 1 ]] && [[ "${1}" == "-e" ]]; then
-        exec $VIM "$RUNFILE"
+if [[ -f "$RUNFILE" ]]; then
+    if [[ "$#" -eq 1 ]] && [[ "$1" = "-e" ]]; then
+        exec vim "$RUNFILE"
     else
-        exec $BASH "$RUNFILE" "${@}"
+        exec bash "$RUNFILE" "${@}"
     fi
 fi
 
-if [[ $# == 1 ]] && [[ "${1}" == "-e" ]]; then
-(
-cat <<RUN
+if [[ "$#" -eq 1 ]] && [[ "$1" = "-e" ]]; then
+( cat <<RUN
 #!/bin/bash
 set -ue
 
 # Runfile script
 
-USAGE="Usage: `basename ${0}` -e|test [args]"
+USAGE="Usage: $(basename "$0") -e|test [args]"
 
 if (( \$# )); then
     runcmd="\${1}"
@@ -55,7 +52,7 @@ test) # usage: test [args]
 
 esac
 RUN
-) > "$RUNFILE" && exec $VIM "$RUNFILE"
+) > "$RUNFILE" && exec vim "$RUNFILE"
 fi
 
 echo "No runfile found."
