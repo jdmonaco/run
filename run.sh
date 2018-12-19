@@ -25,10 +25,10 @@ set -ue
 USAGE="Usage: $(basename "$0") -e|test [args]"
 
 if (( \$# )); then
-    runcmd="\${1}"
+    runcmd="\$1"
     shift
 else
-    echo \$USAGE
+    echo "\$USAGE"
     exit 1
 fi
 
@@ -39,7 +39,7 @@ fi
 # as a usage statement.
 
 
-case \$runcmd in
+case "\$runcmd" in
 
 test) # usage: test [args]
     echo "Testing runfile command (\$# args)." 
