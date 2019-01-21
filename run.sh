@@ -17,7 +17,7 @@ fi
 
 if [[ "$#" -eq 1 ]] && [[ "$1" = "-e" ]]; then
 ( cat <<RUN
-#!/bin/bash
+#!/usr/bin/env bash
 set -ue
 
 # Runfile script
