@@ -4,7 +4,8 @@
 # Fast bash script maker/runner
 #
 
-VERSION="1.1.1"
+NAME=$(basename "$0")
+VERSION="1.1.2"
 RUNFILE="runfile"
 
 if [[ -f "$RUNFILE" ]]; then
@@ -20,15 +21,18 @@ if [[ "$#" -eq 1 ]] && [[ "$1" = "-e" ]]; then
 #!/usr/bin/env bash
 set -ue
 
-# Runfile script
+# Directory runfile
 
-USAGE="Usage: $(basename "$0") -e|test [args]"
+USAGE="Usage: $NAME (-e | <command>) ..."
+CMDHELP=\$(
+    grep -Eo '^[[:alnum:]\|]+\s*).*' runfile | sed 's/)[# ]*/\\\\/' | column -s '\\' -t
+)
 
 if (( \$# )); then
     runcmd="\$1"
     shift
 else
-    echo "\$USAGE"
+    echo -e "\$USAGE\\n\\n\$CMDHELP"
     exit 1
 fi
 
@@ -42,11 +46,11 @@ fi
 case "\$runcmd" in
 
 test) # usage: test [args]
-    echo "Testing runfile command (\$# args)." 
+    echo "Testing runfile command (\$# args)."
     ;;
 
 *)
-    echo \$USAGE
+    echo -e "Error: unrecognized command: \$runcmd\\n\$USAGE\\n\\n\$CMDHELP"
     exit 1
     ;;
 
@@ -55,5 +59,5 @@ RUN
 ) > "$RUNFILE" && exec vim "$RUNFILE"
 fi
 
-echo "No runfile found."
+echo "Missing runfile. Use 'run -e' to initialize."
 exit 1
